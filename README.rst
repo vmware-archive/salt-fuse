@@ -19,7 +19,8 @@ installed on any minion which it connects to.
 
 http://saltstack.com/
 
-The fusepy project (available via pip) must also be installed.
+The fusepy project (available via pip) must also be installed on the system
+that creates the Fuse mount.
 
 https://github.com/terencehonles/fusepy
 
