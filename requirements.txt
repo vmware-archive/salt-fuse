@@ -1,0 +1,2 @@
+Salt>=2014.1
+fusepy

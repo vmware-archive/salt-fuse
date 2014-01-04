@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 '''
 This code is currently considered to be in an alpha state; use at your own risk!
 
@@ -7,36 +7,39 @@ Requires the fusepy library to be installed:
 https://github.com/terencehonles/fusepy
 '''
 
+# Import python libs
 from __future__ import with_statement
-
-from errno import EACCES
-from os.path import realpath
-from sys import argv, exit
-from threading import Lock
-
-import pprint
 import os
-import stat
+import os.path
+import pprint
 import tempfile
 
-from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
-
+# Import salt libs
 import salt.client
 
-tgt = argv[3]
+# Import 3rd-party libs
+from fuse import FuseOSError, Operations, LoggingMixIn
+
 open_files = {}
 
-class SaltFuse(LoggingMixIn, Operations):
-    def __init__(self, root):
-        self.root = realpath(root)
-        #self.rwlock = Lock()
-        self.client = salt.client.LocalClient('/etc/salt')
+
+class SaltFuseDriver(LoggingMixIn, Operations):
+    def __init__(self, opts, root, minion_id):
+        self.opts = opts
+        self.root = os.path.realpath(root)
+        self.minion_id = minion_id
+        self.client = salt.client.LocalClient(
+            self.opts.get('master_config'),
+            os.path.join(os.path.dirname(self.opts['conf_file']), 'master')
+        )
 
     def __call__(self, op, path, *args):
-        return super(SaltFuse, self).__call__(op, self.root + path, *args)
+        return super(SaltFuse, self).__call__(op,
+                                              os.path.join(self.root, path),
+                                              *args)
 
     def _full_path(self, partial):
-        if partial.startswith("/"):
+        if partial.startswith('/'):
             partial = partial[1:]
         path = os.path.join(self.root, partial)
         return path
@@ -48,13 +51,13 @@ class SaltFuse(LoggingMixIn, Operations):
             kwarg = {}
 
         ret = self.client.cmd(
-            tgt,
+            self.minion_id,
             fun,
             arg=arg,
             kwarg=kwarg,
             timeout=5,
         )
-        return ret[tgt]
+        return ret[self.minion_id]
 
     def access(self, path, mode):
         print('function: access')
@@ -78,7 +81,6 @@ class SaltFuse(LoggingMixIn, Operations):
                 'chmod {0} {1}'.format(mode, path),
             ],
         )
-
 
     def chown(self, path, uid, gid):
         print('function: chown')
@@ -333,7 +335,3 @@ class SaltFuse(LoggingMixIn, Operations):
             os.remove(open_files[str(path)]['tmppath'])
             del open_files[str(path)]
         return
-
-
-if __name__ == '__main__':
-    fuse = FUSE(SaltFuse(argv[1]), argv[2], foreground=True)
