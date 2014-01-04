@@ -27,6 +27,7 @@ from saltfuse import config, version
 class SaltFuseParser(OptionParser, ConfigDirMixIn, LogLevelMixIn):
 
     __metaclass__ = OptionParserMeta
+    VERSION = version.__version__
 
     usage = '%prog [options] remote_path local_mount_path minion_id'
 
