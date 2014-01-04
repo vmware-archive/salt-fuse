@@ -143,8 +143,7 @@ class Install(install):
 
 NAME = 'SaltFuse'
 VER = __version__  # pylint: disable=E0602
-DESC = ('Portable, distributed, remote execution and '
-        'configuration management system')
+DESC = 'A FUSE-based filesystem for Salt'
 
 REQUIREMENTS = []
 with open(SALT_FUSE_REQS) as rfh:
