@@ -141,7 +141,7 @@ class Install(install):
         install.run(self)
 
 
-NAME = 'SaltFuse'
+NAME = 'salt-fuse'
 VER = __version__  # pylint: disable=E0602
 DESC = 'A FUSE-based filesystem for Salt'
 
