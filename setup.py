@@ -168,7 +168,7 @@ SETUP_KWARGS = {'name': NAME,
                                 'Programming Language :: Cython',
                                 'Programming Language :: Python :: 2.6',
                                 'Programming Language :: Python :: 2.7',
-                                'Development Status :: 3 - Alpha'
+                                'Development Status :: 3 - Alpha',
                                 'Environment :: Console',
                                 'Intended Audience :: Developers',
                                 'Intended Audience :: Information Technology',
