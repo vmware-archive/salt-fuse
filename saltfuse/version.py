@@ -124,8 +124,9 @@ def versions_information():
     '''
 
     libs = [
-        ('Salt', None, __saltversion__),
+        ('Salt Fuse', None, __version__),
         ('Python', None, sys.version.rsplit('\n')[0].strip()),
+        ('Salt', None, __saltversion__),
         ('FusePy', None, pkg_resources.get_distribution('fusepy').version)
     ]
 
