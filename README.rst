@@ -35,3 +35,25 @@ minion's name is `alton`:
 
     sudo mkdir -p /media/salt/alton/
     sudo python2 salt-fuse.py / /media/salt/alton/ alton
+
+Road Map
+========
+The accomplishment of the following features will determine the accompanying
+release versions:
+
+0.4.0
+    Use the fuse mountpoint as a filesystem browser for Linux-based minions
+    (i.e., /media/salt/minion_id/<minion's root>).
+
+0.5.0
+    Use the fuse mountpoint as a filesystem browser for Windows-based minions,
+    starting with the driver letter (i.e., /media/salt/minion_id/C/WINNT/, etc).
+
+0.6.0
+    Configure alternate mountpoints for explicitly configured minions, outside
+    of the standard root (i.e., /media/salt/minion_alias/somedir/ points to
+    /path/to/dir/ on the minion)
+
+With the release of 0.6.0, the salt-fuse project will move from alpha status
+to beta status. Releases after that point may contain new features, but the
+general focus will be on stability.
