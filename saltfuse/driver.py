@@ -36,9 +36,10 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         )
 
     def __call__(self, op, path, *args):
-        return super(SaltFuse, self).__call__(op,
-                                              os.path.join(self.root, path),
-                                              *args)
+        return super(SaltFuseDriver, self).__call__(op,
+                                                    os.path.join(self.root,
+                                                                 path),
+                                                    *args)
 
     def _full_path(self, partial):
         if partial.startswith('/'):
