@@ -29,8 +29,10 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         self.root = os.path.realpath(root)
         self.minion_id = minion_id
         self.client = salt.client.LocalClient(
-            self.opts.get('master_config'),
-            os.path.join(os.path.dirname(self.opts['conf_file']), 'master')
+            self.opts.get('master_config',
+                          os.path.join(os.path.dirname(self.opts['conf_file']),
+                                       'master')
+            )
         )
 
     def __call__(self, op, path, *args):
