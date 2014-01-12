@@ -34,7 +34,7 @@ minion's name is `alton`:
 .. code-block::
 
     sudo mkdir -p /media/salt/alton/
-    sudo python2 salt-fuse.py / /media/salt/alton/ alton
+    sudo salt-fuse / /media/salt/alton/ alton
 
 Road Map
 ========
