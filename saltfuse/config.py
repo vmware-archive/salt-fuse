@@ -21,6 +21,7 @@ import salt.syspaths
 # default configurations
 DEFAULT_FUSE_OPTS = {
     'user': 'root',
+    'cachedir': os.path.join(salt.syspaths.CACHE_DIR, 'fuse'),
     'conf_file': os.path.join(salt.syspaths.CONFIG_DIR, 'fuse'),
     'verify_env': True,
     'default_include': 'fuse.conf.d/*.conf',
@@ -83,5 +84,11 @@ def apply_fuse_config(overrides, defaults=None):
 
     if overrides:
         config.update(overrides)
+
+    # set up the extension_modules location from the cachedir
+    config['extension_modules'] = (
+        config.get('extension_modules') or
+        os.path.join(config['cachedir'], 'extmods')
+    )
 
     return config
