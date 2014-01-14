@@ -25,6 +25,9 @@ open_files = {}
 
 class SaltFuseDriver(LoggingMixIn, Operations):
     def __init__(self, opts, root, minion_id):
+        print('Initializing salt-fuse')
+        print('Root: {0}'.format(root))
+        print('ID: {0}'.format(minion_id))
         self.opts = opts
         self.root = os.path.realpath(root)
         self.minion_id = minion_id
@@ -35,13 +38,8 @@ class SaltFuseDriver(LoggingMixIn, Operations):
             )
         )
 
-    def __call__(self, op, path, *args):
-        return super(SaltFuseDriver, self).__call__(op,
-                                                    os.path.join(self.root,
-                                                                 path),
-                                                    *args)
-
     def _full_path(self, partial):
+        print('_full_path is {0}'.format(partial))
         if partial.startswith('/'):
             partial = partial[1:]
         path = os.path.join(self.root, partial)
@@ -63,7 +61,7 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return ret[self.minion_id]
 
     def access(self, path, mode):
-        print('function: access')
+        print('function access')
         full_path = self._full_path(path)
         return self._salt_cmd(
             'file.access',
@@ -74,33 +72,33 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         )
 
     def chmod(self, path, mode):
-        print('function: chmod')
+        print('function chmod')
         mode = oct(mode)
         mode = str(mode).replace('L', '')
         mode = mode[-4:]
         return self._salt_cmd(
             'cmd.run',
             arg=[
-                'chmod {0} {1}'.format(mode, path),
+                'chmod {0} {1}'.format(mode, full_path),
             ],
         )
 
     def chown(self, path, uid, gid):
-        print('function: chown')
+        print('function chown')
         return self._salt_cmd(
             'cmd.run',
             arg=[
-                'chown {0}.{1} {2}'.format(uid, gid, path),
+                'chown {0}.{1} {2}'.format(uid, gid, full_path),
             ],
         )
 
     def getattr(self, path, fh=None):
-        print('function: getattr')
         full_path = self._full_path(path)
+        print('function getattr: {0}, {1}, {2}'.format(path, full_path, fh))
         ret = self._salt_cmd(
             'file.lstat',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
         if not ret:
@@ -109,7 +107,7 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return ret
 
     def link(self, target, source):
-        print('function: link')
+        print('function link')
         res = self._salt_cmd(
             'file.link',
             kwarg={
@@ -120,19 +118,19 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return
 
     def mkdir(self, path, mode):
-        print('function: mkdir')
+        print('function mkdir')
         full_path = self._full_path(path)
         res = self._salt_cmd(
             'file.mkdir',
             kwarg={
-                'dir_path': path,
+                'dir_path': full_path,
                 'mode': mode,
             },
         )
         return
 
     def mknod(self, path, mode, device):
-        print('function: mknod')
+        print('function mknod')
         full_path = self._full_path(path)
 
         devtype = str(oct(mode)).replace('L', '')
@@ -151,7 +149,7 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         res = self._salt_cmd(
             'file.mknod',
             kwarg={
-                'name': path,
+                'name': full_path,
                 'ntype': ntype,
                 'major': major,
                 'minor': minor,
@@ -160,28 +158,28 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return
 
     def readdir(self, path, fh):
-        print('function: readdir')
         full_path = self._full_path(path)
+        print('function readdir: {0}, {1}'.format(path, full_path))
 
         return self._salt_cmd(
             'file.readdir',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
 
     def readlink(self, path):
-        print('function: readlink')
         full_path = self._full_path(path)
+        print('function readlink: {0}, {1}'.format(path, full_path))
         return self._salt_cmd(
             'file.readlink',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
 
     def rename(self, src, dst):
-        print('function: rename')
+        print('function rename')
         self._salt_cmd(
             'file.rename',
             kwarg={
@@ -192,30 +190,30 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return
 
     def rmdir(self, path):
-        print('function: rmdir')
+        print('function rmdir')
         pprint.pprint(path)
         self._salt_cmd(
             'file.rmdir',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
         return
 
     def statfs(self, path, fh=None):
-        print('function: statfs')
+        print('function statfs')
         full_path = self._full_path(path)
         ret = self._salt_cmd(
             'file.statvfs',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
         pprint.pprint(ret)
         return ret
 
     def symlink(self, target, source):
-        print('function: symlink')
+        print('function symlink')
         if source.startswith('/'):
             # This gets tricky, trying to create symlinks outside the FUSE
             # filesystem. Here be dragons.
@@ -232,13 +230,13 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return
 
     def unlink(self, path):
-        print('function: unlink')
+        print('function unlink')
         full_path = self._full_path(path)
 
         isdir = self._salt_cmd(
             'file.directory_exists',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
         if isdir:
@@ -247,17 +245,17 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         self._salt_cmd(
             'file.remove',
             kwarg={
-                'path': path,
+                'path': full_path,
             },
         )
         return
 
     def utimens(self, path, times=None):
-        print('function: utimens')
+        print('function utimens')
         full_path = self._full_path(path)
 
         kwarg = {
-            'name': path,
+            'name': full_path,
         }
         if times and times[0]:
             kwarg['atime'] = str(int(times[0]))
@@ -274,24 +272,26 @@ class SaltFuseDriver(LoggingMixIn, Operations):
     listxattr = None
 
     def open(self, path, flags=None):
-        print('function: open')
+        full_path = self._full_path(path)
+        print('function open')
         tmpfh, tmppath = tempfile.mkstemp()
-        open_files[str(path)] = {'tmpfh': tmpfh, 'tmppath': str(tmppath)}
+        open_files[str(full_path)] = {'tmpfh': tmpfh, 'tmppath': str(tmppath)}
         return tmpfh
 
     def create(self, path, mode):
-        print('function: create ({0}), mode {1}'.format(path, mode))
-        ret = self.open(path)
+        full_path = self._full_path(path)
+        print('function create ({0}), mode {1}'.format(path, mode))
+        ret = self.open(full_path)
         pprint.pprint(ret)
         return ret
 
     def read(self, path, size, offset, fh):
-        print('function: read')
+        print('function read')
         full_path = self._full_path(path)
         ret = self._salt_cmd(
             'file.seek_read',
             kwarg={
-                'path': path,
+                'path': full_path,
                 'size': size,
                 'offset': str(offset),
             },
@@ -299,12 +299,12 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return ret
 
     def write(self, path, data, offset, fh):
-        print('function: write, path is {0}, offset is {1}'.format(path, offset))
         full_path = self._full_path(path)
+        print('function write, path is {0}, offset is {1}'.format(path, offset))
         ret = self._salt_cmd(
             'file.seek_write',
             kwarg={
-                'path': path,
+                'path': full_path,
                 'data': data,
                 'offset': str(offset),
             },
@@ -312,29 +312,30 @@ class SaltFuseDriver(LoggingMixIn, Operations):
         return ret
 
     def flush(self, path, fh):
-        print('function: flush')
+        print('function flush')
         return
 
     def fsync(self, path, datasync, fh):
-        print('function: fsync')
+        print('function fsync')
         return
 
     def truncate(self, path, length, fh=None):
-        print('function: truncate')
+        print('function truncate')
         full_path = self._full_path(path)
         ret = self._salt_cmd(
             'file.truncate',
             kwarg={
-                'path': path,
+                'path': full_path,
                 'length': str(length),
             },
         )
         return
 
     def release(self, path, fh):
-        print('function: release')
+        full_path = self._full_path(path)
+        print('function release')
         pprint.pprint(open_files)
-        if str(path) in open_files:
-            os.remove(open_files[str(path)]['tmppath'])
-            del open_files[str(path)]
+        if str(full_path) in open_files:
+            os.remove(open_files[str(full_path)]['tmppath'])
+            del open_files[str(full_path)]
         return
