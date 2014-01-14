@@ -29,7 +29,7 @@ class SaltFuseParser(OptionParser, ConfigDirMixIn, LogLevelMixIn):
     __metaclass__ = OptionParserMeta
     VERSION = version.__version__
 
-    usage = '%prog [options] remote_path local_mount_path minion_id'
+    usage = '%prog [options] local_mount_path'
 
     # ConfigDirMixIn attributes
     _config_filename_ = 'fuse'
@@ -41,11 +41,11 @@ class SaltFuseParser(OptionParser, ConfigDirMixIn, LogLevelMixIn):
     _default_logging_logfile_ = os.path.join(syspaths.LOGS_DIR, 'fuse')
 
     def _mixin_after_parsed(self):
-        if len(self.args) != 3:
+        if len(self.args) != 1:
             self.print_help()
             self.exit(1)
 
-        self.remote_path, self.mount_path, self.minion_id = self.args
+        [self.mount_path] = self.args
 
     def print_versions_report(self, file=sys.stdout):
         print >> file, '\n'.join(version.versions_report())

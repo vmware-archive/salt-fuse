@@ -27,15 +27,13 @@ open_files = {}
 
 
 class SaltFuseDriver(LoggingMixIn, Operations):
-    def __init__(self, opts, root, minion_id):
+    def __init__(self, opts):
         root = '/'
         log.debug('Initializing salt-fuse')
         log.debug('Root: {0}'.format(root))
-        log.debug('ID: {0}'.format(minion_id))
         log.debug(self._list_minions())
         self.opts = opts
         self.root = os.path.realpath(root)
-        self.minion_id = minion_id
         self.stamp = time.time()
         self.client = salt.client.LocalClient(
             self.opts.get('master_config',
@@ -72,7 +70,8 @@ class SaltFuseDriver(LoggingMixIn, Operations):
             kwarg=kwarg,
             timeout=5,
         )
-        return ret[self.minion_id]
+        #return ret[self.minion_id]
+        return ret[minion_id]
 
     def access(self, path, mode):
         log.debug('function access')

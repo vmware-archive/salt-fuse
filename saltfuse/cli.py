@@ -44,7 +44,7 @@ class SaltFuse(SaltFuseParser):
         self.setup_logfile_logger()
 
         driver = FUSE(
-            SaltFuseDriver(self.config, self.remote_path, self.minion_id),
+            SaltFuseDriver(self.config),
             self.mount_path,
             foreground=True
         )
