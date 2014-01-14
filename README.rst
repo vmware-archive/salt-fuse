@@ -26,24 +26,19 @@ https://github.com/terencehonles/fusepy
 
 Execution
 =========
-Create the directory which will hold the mountpoint. In future versions, this
-driver is intended to be used as a minion filesystem browser. Until that
-happens, minions must be mounted individually. For instance, assuming your
-minion's name is `alton`:
+Create the directory which will hold the mountpoint. The root of this
+filesystem shows a list of minions. Inside each minion's directory is the root
+of that minion's filesystem.
 
-.. code-block::
+.. code-block:: bash
 
-    sudo mkdir -p /media/salt/alton/
-    sudo salt-fuse / /media/salt/alton/ alton
+    sudo mkdir -p /media/salt/
+    sudo salt-fuse /media/salt/
 
 Road Map
 ========
 The accomplishment of the following features will determine the accompanying
 release versions:
-
-0.4.0
-    Use the fuse mountpoint as a filesystem browser for Linux-based minions
-    (i.e., /media/salt/minion_id/<minion's root>).
 
 0.5.0
     Use the fuse mountpoint as a filesystem browser for Windows-based minions,
@@ -52,8 +47,12 @@ release versions:
 0.6.0
     Configure alternate mountpoints for explicitly configured minions, outside
     of the standard root (i.e., /media/salt/minion_alias/somedir/ points to
-    /path/to/dir/ on the minion)
+    /path/to/dir/ on the minion).
 
-With the release of 0.6.0, the salt-fuse project will move from alpha status
+0.7.0
+    Allow certain files from the minions to be cached locally, rather than
+    accessed using network I/O.
+
+With the release of 0.7.0, the salt-fuse project will move from alpha status
 to beta status. Releases after that point may contain new features, but the
 general focus will be on stability.
