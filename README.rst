@@ -2,6 +2,8 @@
 Salt Fuse
 =========
 
+Note: This repository has been archived. It is read-only. See https://github.com/blog/2460-archiving-repositories for more information.
+
 Salt is a powerful infrastructure framework, allowing a master (or masters) to
 control a group of minions, by issuing remote execution calls. The Salt Fuse
 project takes advantage of this power by allowing the user to treat remote
